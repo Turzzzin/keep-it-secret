@@ -34,3 +34,5 @@ go.work.sum
 /secrets.db
 /node_modules
 /dist
+__debug*
+.vscode/

@@ -36,3 +36,6 @@ go.work.sum
 /dist
 __debug*
 .vscode/
+
+pycache__/
+*.pyc

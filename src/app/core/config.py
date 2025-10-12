@@ -1,3 +1,8 @@
+"""
+Configuration settings for the application.
+Loads environment variables from a .env file if it exists.
+"""
+
 from pathlib import Path
 from typing import List
 from dotenv import load_dotenv

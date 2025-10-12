@@ -40,3 +40,6 @@ __debug*
 
 pycache__/
 *.pyc
+
+# zed editor
+.ropeproject/

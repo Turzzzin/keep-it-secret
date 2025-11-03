@@ -1,0 +1,49 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: kis
+    main: ./cmd
+    binary: kis
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64 # optional (GoReleaser skips unsupported combos)
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+
+# Instead of zipping, just upload raw binaries named per OS/ARCH
+archives:
+  - id: binaries
+    format: binary
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+
+# Optional checksum file for verification
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  footer: |-
+    ---
+
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).

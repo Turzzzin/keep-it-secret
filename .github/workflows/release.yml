@@ -1,9 +1,10 @@
-name: Release
+name: Auto Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main  # or 'master', adjust as needed
+
 permissions:
   contents: write
   packages: write
@@ -11,12 +12,40 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # needed so GoReleaser can access tags
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-      - uses: goreleaser/goreleaser-action@v6
+
+      # Step 1 — Determine next version tag automatically
+      - name: Determine next version
+        id: version
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $latest_tag"
+
+          IFS='.' read -r major minor patch <<<"${latest_tag#v}"
+          next_tag="v$major.$minor.$((patch+1))"
+          echo "Next tag: $next_tag"
+
+          echo "next_tag=$next_tag" >> $GITHUB_OUTPUT
+
+      # Step 2 — Create and push the new tag
+      - name: Create and push tag
+        run: |
+          git tag ${{ steps.version.outputs.next_tag }}
+          git push origin ${{ steps.version.outputs.next_tag }}
+
+      # Step 3 — Run GoReleaser to build + release
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest

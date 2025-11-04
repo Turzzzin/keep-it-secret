@@ -1,108 +1,85 @@
 <pre>
-    ____  __.                    __    .__  __      _________                            __
-   |    |/ _|____   ____ _______/  |_  |__|/  |_   /   _____/ ____   ___________   _____/  |_
-   |      <_/ __ \_/ __ \\____ \   __\ |  \   __\  \_____  \_/ __ \_/ ___\_  __ \_/ __ \   __\
-   |    |  \  ___/\  ___/|  |_> >  |   |  ||  |    /        \  ___/\  \___|  | \/\  ___/|  |
-   |____|__ \___  >\___  >   __/|__|   |__||__|   /_______  /\___  >\___  >__|    \___  >__|
-           \/   \/     \/|__|                             \/     \/     \/            \/
+░██     ░██                                     ░██████   ░██         ░██████                                                ░██
+░██    ░██                                        ░██     ░██        ░██   ░██                                               ░██
+░██   ░██    ░███████   ░███████  ░████████       ░██  ░████████    ░██          ░███████   ░███████  ░██░████  ░███████  ░████████
+░███████    ░██    ░██ ░██    ░██ ░██    ░██      ░██     ░██        ░████████  ░██    ░██ ░██    ░██ ░███     ░██    ░██    ░██
+░██   ░██   ░█████████ ░█████████ ░██    ░██      ░██     ░██               ░██ ░█████████ ░██        ░██      ░█████████    ░██
+░██    ░██  ░██        ░██        ░███   ░██      ░██     ░██        ░██   ░██  ░██        ░██    ░██ ░██      ░██           ░██
+░██     ░██  ░███████   ░███████  ░██░█████     ░██████    ░████      ░██████    ░███████   ░███████  ░██       ░███████      ░████
+                                  ░██
+                                  ░██
 </pre>
 
 A command-line interface (CLI) tool for securely storing secrets locally.
 
-## Features
-
-*   **User Authentication:** Create a local account with a username and password.
-*   **Secure Secret Storage:** Encrypt and store your secrets on your local machine.
-*   **Master Password:** A single master password is used to encrypt and decrypt all your secrets, ensuring that only you can access them.
-*   **Cross-Platform:** Built with Go, `keep-it-secret` can be compiled for various operating systems.
-
-## Architecture
-
-The `keep-it-secret` CLI is built with a modular architecture, separating concerns into different packages.
-
-*   **`cmd/keep-it-secret`**: The main application entry point. It handles command-line argument parsing and orchestrates calls to the other internal packages. We use the `cobra` library for creating a powerful and modern CLI application.
-*   **`internal/auth`**: Handles user authentication. This includes creating new users, verifying credentials, and managing user sessions. Passwords are hashed before being stored.
-*   **`internal/crypto`**: Manages all cryptographic operations. It uses AES-256-GCM for strong encryption of secrets. The master password is used to derive an encryption key.
-*   **`internal/storage`**: Responsible for all interactions with the local filesystem. It stores user data and the encrypted secrets in a designated directory.
-*   **`internal/ui`**: Handles all user-facing interactions, such as prompting for passwords and displaying formatted output.
-
-## Folder Structure
-
-```
-/
-├── .gitignore
-├── README.md
-├── go.mod
-├── go.sum
-├── cmd/
-│   └── keep-it-secret/
-│       └── main.go         # Main application entry point
-├── internal/
-│   ├── auth/
-│   │   └── auth.go         # User authentication logic
-│   ├── crypto/
-│   │   └── crypto.go       # Encryption and decryption logic
-│   ├── storage/
-│   │   └── storage.go      # Local file storage logic
-│   └── ui/
-│       └── ui.go           # User interface and interaction logic
-├── scripts/
-│   └── install.sh          # Installation script
-└── docs/
-    └── architecture.md     # Detailed architecture documentation
-```
+`keep-it-secret` is a simple and powerful tool for managing your secrets directly from the terminal. It uses strong AES-256-GCM encryption to ensure that your sensitive information is always protected. With a single master password, you have complete control over your secrets, which are stored securely on your local machine.
 
 ## Installation
 
-1.  **Prerequisites:** Make sure you have Go installed on your system.
-2.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-username/keep-it-secret.git
-    cd keep-it-secret
-    ```
-3.  **Run the installation script:**
-    ```bash
-    chmod +x scripts/install.sh
-    ./scripts/install.sh
-    ```
-    The `install.sh` script will build the Go project and move the binary to a directory in your `PATH` (e.g., `/usr/local/bin`).
+You can easily install `keep-it-secret` by running the following command in your terminal:
 
-    **`scripts/install.sh`:**
-    ```sh
-    #!/bin/bash
-    echo "Building keep-it-secret..."
-    go build -o keep-it-secret ./cmd/keep-it-secret
-    echo "Installing keep-it-secret to /usr/local/bin..."
-    sudo mv keep-it-secret /usr/local/bin/
-    echo "Installation complete!"
-    ```
+```bash
+curl -sSL https://raw.githubusercontent.com/turzzzin/keep-it-secret/main/scripts/install.sh | bash
+```
+
+This script will download the latest release for your operating system and architecture, and install it in `/usr/local/bin`.
 
 ## Usage
 
-### Create an account
+### Register a new user
+
+To start using `keep-it-secret`, you first need to create a user account. This account is local to your machine.
 
 ```bash
 kis register
 ```
 
+You will be prompted to enter a username and a master password. The master password is the key to all your secrets, so make sure to choose a strong one and keep it safe.
+
 ### Add a new secret
 
-```bash
-kis add
-```
-You will be prompted for your master password and the secret you want to add.
+To add a new secret, use the `add` command. You can store multiple key-value pairs under a single secret name.
 
-### View a secret
+```bash
+kis add <secret-name>
+```
+
+You will be prompted to enter your key-value pairs and your master password.
+
+### Retrieve a secret
+
+To retrieve a secret, use the `get` command.
 
 ```bash
 kis get <secret-name>
 ```
-You will be prompted for your master password to decrypt the secret.
+
+You will be prompted for your master password to decrypt and display the secret.
 
 ### List all secrets
 
+To see a list of all the secrets you have stored, use the `list` command.
+
 ```bash
 kis list
+```
+
+### Delete a secret or user
+
+You can delete a secret or a user with the `delete` command.
+
+```bash
+# Delete a secret
+kis delete secret <secret-name>
+
+# Delete all secrets
+kis delete secret --all
+
+# Delete a user
+kis delete user <username>
+
+# Delete all users
+kis delete user --all
 ```
 
 ## Contributing
